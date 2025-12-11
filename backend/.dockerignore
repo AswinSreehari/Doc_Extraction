@@ -1,0 +1,38 @@
+# node / deps
+node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# local env / credentials
+.env
+.env.local
+.env.*.local
+*.local
+
+# editor / OS noise
+.vscode
+.idea
+.DS_Store
+Thumbs.db
+
+# builds / outputs
+dist
+dist-ssr
+build
+coverage
+uploads/pdfs/*.pdf
+uploads/*.log
+result.text
+result.value
+
+# docker files we don't want to re-add
+Dockerfile
+docker-compose*.yml
+
+# other heavy/irrelevant files
+*.log
+*.tgz
+*.zip
+*.bak

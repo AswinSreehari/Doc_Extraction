@@ -1,0 +1,4 @@
+pytesseract
+python-pptx
+Pillow
+python-dotenv

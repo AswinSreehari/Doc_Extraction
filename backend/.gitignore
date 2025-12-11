@@ -1,0 +1,84 @@
+
+# ─────────────────────────────────────────────
+# Node / Express backend ignore list
+# ─────────────────────────────────────────────
+
+# Node modules
+node_modules/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+/uploads
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Runtime files
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Diagnostic reports
+report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+# Coverage directory
+coverage/
+
+# Build output
+dist/
+build/
+
+# Temporary / cache files
+.tmp/
+temp/
+tmp/
+.cache/
+.eslintcache
+
+# VSCode / editor-specific
+.vscode/
+.idea/
+*.swp
+
+# Upload folder (if files stored temporarily)
+uploads/
+uploaded_files/
+public/uploads/
+
+# PDF output directory (your generated canonical PDFs)
+pdfs/
+pdf-output/
+generated_pdfs/
+
+# If using multer temp file storage
+multer-temp/
+
+# OS artifacts
+.DS_Store
+Thumbs.db
+
+# TypeScript artifacts (if applicable)
+*.tsbuildinfo
+tsconfig.tsbuildinfo
+
+# Optional: ignore local LibreOffice conversion outputs (if you generate temp files)
+*.bak
+*.tmp
+
+# Optional: ignore CloudConvert job export files if stored locally
+cloudconvert-temp/
+backend/config/document-ocr-service.json
+
+
+# ─────────────────────────────────────────────
+# End of file
+# ─────────────────────────────────────────────
