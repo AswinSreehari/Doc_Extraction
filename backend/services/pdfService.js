@@ -50,17 +50,11 @@ function createPdfFromText(text, outputPath) {
  */
 function createPdfFromTable(rows, outputPath) {
   return new Promise((resolve, reject) => {
-    const doc = new PDFDocument({
-      margin: 40,
-      size: 'A4',
-    });
-
+    const doc = new PDFDocument({ margin: 40, size: 'A4' });
     const stream = fs.createWriteStream(outputPath);
     doc.pipe(stream);
 
-    const pageWidth =
-      doc.page.width - doc.page.margins.left - doc.page.margins.right;
-
+    const pageWidth = doc.page.width - doc.page.margins.left - doc.page.margins.right;
     const startX = doc.page.margins.left;
     let currentY = doc.page.margins.top;
 
@@ -68,8 +62,16 @@ function createPdfFromTable(rows, outputPath) {
     const rowHeight = 20;
     const headerFill = '#f3f4f6';
 
-    const colCount = rows && rows.length > 0 ? rows[0].length : 0;
-    const colWidth = colCount > 0 ? pageWidth / colCount : pageWidth;
+    if (!Array.isArray(rows) || rows.length === 0) {
+      doc.text('No table data available.');
+      doc.end();
+      stream.on('finish', () => resolve(outputPath));
+      return;
+    }
+
+    const headers = Object.keys(rows[0]);
+    const colCount = headers.length;
+    const colWidth = pageWidth / colCount;
 
     function ensureSpaceForRow() {
       if (currentY + rowHeight > doc.page.height - doc.page.margins.bottom) {
@@ -78,23 +80,33 @@ function createPdfFromTable(rows, outputPath) {
       }
     }
 
-    rows.forEach((row, rowIndex) => {
+    // Draw header row
+    ensureSpaceForRow();
+    doc.rect(startX, currentY, pageWidth, rowHeight).fill(headerFill);
+    headers.forEach((header, i) => {
+      const x = startX + i * colWidth;
+      doc
+        .fontSize(10)
+        .fillColor('#111827')
+        .text(header, x + padding, currentY + padding, {
+          width: colWidth - 2 * padding,
+          height: rowHeight - 2 * padding,
+          ellipsis: true,
+        })
+        .stroke();
+    });
+    doc.fillColor('#000000'); // reset color
+    currentY += rowHeight;
+
+    // Draw rows
+    rows.forEach((row) => {
       ensureSpaceForRow();
-
-      if (rowIndex === 0) {
-        doc.rect(startX, currentY, pageWidth, rowHeight).fill(headerFill);
-      }
-
-      row.forEach((cell, colIndex) => {
-        const x = startX + colIndex * colWidth;
-        const text =
-          cell === null || cell === undefined ? '' : String(cell);
-
+      headers.forEach((header, i) => {
+        const x = startX + i * colWidth;
+        const text = row[header] !== undefined ? String(row[header]) : '';
         doc
           .rect(x, currentY, colWidth, rowHeight)
-          .stroke();
-
-        doc
+          .stroke()
           .fontSize(10)
           .fillColor('#111827')
           .text(text, x + padding, currentY + padding, {
@@ -103,20 +115,15 @@ function createPdfFromTable(rows, outputPath) {
             ellipsis: true,
           });
       });
-
-      if (rowIndex === 0) {
-        doc.fillColor('#000000');
-      }
-
       currentY += rowHeight;
     });
 
     doc.end();
-
     stream.on('finish', () => resolve(outputPath));
     stream.on('error', reject);
   });
 }
+
 
 module.exports = {
   createPdfFromText,

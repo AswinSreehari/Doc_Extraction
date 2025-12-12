@@ -1,9 +1,8 @@
-// backend/services/tableExtractService.js
 const XLSX = require('xlsx');
 
 /**
  * Read a CSV / Excel file and return:
- * - rows: array of arrays (table)
+ * - rows: array of structured objects
  * - text: flattened string version (for preview / search)
  */
 function extractTableAndText(filePath) {
@@ -14,18 +13,23 @@ function extractTableAndText(filePath) {
   const firstSheetName = workbook.SheetNames[0];
   const sheet = workbook.Sheets[firstSheetName];
 
-  // Convert sheet into array-of-arrays (rows)
-  const rows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+  // Convert sheet to array-of-arrays for raw rows
+  const rawRows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
 
-  // rows is like:
-  // [
-  //   ['Name', 'Age', 'City'],
-  //   ['John', 30, 'London'],
-  //   ...
-  // ]
+  // Extract headers from first row
+  const headers = rawRows[0] || [];
+
+  // Transform to array of structured objects
+  const rows = rawRows.slice(1).map((row) => {
+    const obj = {};
+    headers.forEach((header, index) => {
+      obj[header !== undefined ? String(header).trim() : `Column ${index}`] = row[index] !== undefined ? String(row[index]) : '';
+    });
+    return obj;
+  });
 
   // Convert to flattened text: columns separated by tabs, rows by newlines
-  const text = rows
+  const text = rawRows
     .map((row) =>
       row
         .map((cell) =>
@@ -35,7 +39,7 @@ function extractTableAndText(filePath) {
     )
     .join('\n');
 
-  return { rows, text };
+  return { headers, rows, text };
 }
 
 module.exports = {
