@@ -884,3 +884,77 @@ async function convertPptFile(file) {
     tableRows: null,
   };
 }
+
+
+// async function convertPptFile(file) {
+//   const ext = path.extname(file.originalname || '').toLowerCase();
+//   const baseName = path.basename(file.filename, ext);
+//   const outPdfName = `${baseName}-canonical.pdf`;
+//   const pdfPath = path.join(pdfDir, outPdfName);
+
+//   // Remove existing output if any
+//   try {
+//     if (fs.existsSync(pdfPath)) await fs.promises.unlink(pdfPath);
+//   } catch (e) {
+//     console.warn('Could not remove existing pdfPath:', pdfPath, e.message);
+//   }
+
+//   const pythonPath = process.env.PYTHON_BIN || 'python3';
+//   const scriptPath = path.resolve('./services/pptx_text_extractor.py');
+//   const pptxPath = path.resolve(file.path);
+
+//   let extractedText = '';
+
+//   try {
+//     const { stdout } = await execProm(`"${pythonPath}" "${scriptPath}" "${pptxPath}"`, {
+//       timeout: 120000,
+//       maxBuffer: 10 * 1024 * 1024
+//     });
+
+//     extractedText = stdout.trim();
+//   } catch (error) {
+//     console.error('[Parser] Python script error:', error.message);
+//   }
+
+//   // Fallback to OCR if needed
+//   if (!extractedText) {
+//     try {
+//       const ocrResult = await Tesseract.recognize(pptxPath, 'eng');
+//       extractedText = ocrResult.data.text || '';
+//     } catch (ocrErr) {
+//       console.error('[OCR] Tesseract error:', ocrErr.message);
+//     }
+//   }
+
+//   if (!extractedText) {
+//     throw new Error('No text found via parser or OCR.');
+//   }
+
+//   // 🔍 Clean extractedText: remove UI noise, symbols, excessive whitespace
+//   extractedText = extractedText
+//     .replace(/[\[\]{}()|@_=+:;*#'"~<>^]+/g, '') // remove non-informative symbols
+//     .replace(/(?:Home|Insert|Design|Transitions|Animations|Slide Show|Review|View|Notes|Acrobat)[^\n]*\n?/gi, '') // common PPT UI headers
+//     .replace(/(?:Click to add (title|text|notes)|Type here to search).*/gi, '')
+//     .replace(/\n{2,}/g, '\n\n') // normalize paragraph breaks
+//     .replace(/[^\S\r\n]{2,}/g, ' ') // collapse long spaces
+//     .trim();
+
+//   // Create PDF
+//   await createPdfFromText(extractedText, pdfPath);
+
+//   const preview = extractedText.length > 500 ? extractedText.slice(0, 500) + '...' : extractedText;
+
+//   return {
+//     originalFileName: file.originalname,
+//     storedFileName: file.filename,
+//     mimeType: file.mimetype,
+//     size: file.size,
+//     path: file.path,
+//     pdfPath,
+//     extractedText,
+//     preview,
+//     isTable: false,
+//     tableRows: null,
+//   };
+// }
+ 

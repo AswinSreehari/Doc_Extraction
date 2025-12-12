@@ -1,4 +1,3 @@
-// backend/services/pdfService.js
 const fs = require('fs');
 const path = require('path');
 const PDFDocument = require('pdfkit');
@@ -12,23 +11,27 @@ if (!fs.existsSync(pdfDir)) {
 
 /**
  * Create a simple PDF from plain text and save it to outputPath.
- * This version structures the text into paragraphs and handles whitespace cleanly.
+ * Structured into paragraphs with clean formatting.
  */
 function createPdfFromText(text, outputPath) {
   return new Promise((resolve, reject) => {
-    const doc = new PDFDocument({
-      margin: 40,
-    });
-
+    const doc = new PDFDocument({ margin: 40 });
     const stream = fs.createWriteStream(outputPath);
     doc.pipe(stream);
 
     doc.font('Times-Roman').fontSize(12);
 
-    const paragraphs = (text || '').split(/\n{2,}/); // split on double line breaks
+    if (!text || !text.trim()) {
+      doc.text('No textual content available.');
+      doc.end();
+      stream.on('finish', () => resolve(outputPath));
+      return;
+    }
 
-    paragraphs.forEach((para, index) => {
-      const cleaned = para.trim().replace(/\n/g, ' ');
+    const paragraphs = text.split(/\n{2,}/); // split on double line breaks
+
+    paragraphs.forEach((para) => {
+      const cleaned = para.trim().replace(/\n+/g, ' ');
       if (cleaned) {
         doc.text(cleaned, {
           align: 'left',
@@ -38,15 +41,13 @@ function createPdfFromText(text, outputPath) {
     });
 
     doc.end();
-
     stream.on('finish', () => resolve(outputPath));
     stream.on('error', reject);
   });
 }
 
 /**
- * Create a PDF that renders tabular data (rows: array of arrays).
- * Each row is a row in the table. Cells are rendered in columns.
+ * Create a PDF rendering tabular data from array of objects.
  */
 function createPdfFromTable(rows, outputPath) {
   return new Promise((resolve, reject) => {
@@ -61,6 +62,7 @@ function createPdfFromTable(rows, outputPath) {
     const padding = 4;
     const rowHeight = 20;
     const headerFill = '#f3f4f6';
+    const altRowFill = '#f9fafb';
 
     if (!Array.isArray(rows) || rows.length === 0) {
       doc.text('No table data available.');
@@ -80,46 +82,52 @@ function createPdfFromTable(rows, outputPath) {
       }
     }
 
-    // Draw header row
+    // Draw header
     ensureSpaceForRow();
     headers.forEach((header, i) => {
       const x = startX + i * colWidth;
 
-      // Fill background
-      doc
-        .rect(x, currentY, colWidth, rowHeight)
-        .fillAndStroke(headerFill, '#000000');
+      doc.rect(x, currentY, colWidth, rowHeight)
+         .fillAndStroke(headerFill, '#000000');
 
-      // Text
-      doc
-        .fontSize(10)
-        .fillColor('#111827')
-        .text(header, x + padding, currentY + padding, {
-          width: colWidth - 2 * padding,
-          height: rowHeight - 2 * padding,
-          ellipsis: true,
-        });
+      doc.fontSize(10)
+         .fillColor('#111827')
+         .text(header, x + padding, currentY + padding, {
+           width: colWidth - 2 * padding,
+           height: rowHeight - 2 * padding,
+           ellipsis: true,
+         });
     });
+
     currentY += rowHeight;
 
-    // Draw data rows
-    rows.forEach((row) => {
+    // Draw rows
+    rows.forEach((row, rowIndex) => {
       ensureSpaceForRow();
+
+      const isAltRow = rowIndex % 2 === 1;
+
       headers.forEach((header, i) => {
         const x = startX + i * colWidth;
         const text = row[header] !== undefined ? String(row[header]) : '';
 
-        doc
-          .rect(x, currentY, colWidth, rowHeight)
-          .stroke()
-          .fontSize(10)
-          .fillColor('#111827')
-          .text(text, x + padding, currentY + padding, {
-            width: colWidth - 2 * padding,
-            height: rowHeight - 2 * padding,
-            ellipsis: true,
-          });
+        if (isAltRow) {
+          doc.rect(x, currentY, colWidth, rowHeight)
+             .fill(altRowFill);
+        }
+
+        doc.rect(x, currentY, colWidth, rowHeight)
+           .stroke();
+
+        doc.fontSize(10)
+           .fillColor('#111827')
+           .text(text, x + padding, currentY + padding, {
+             width: colWidth - 2 * padding,
+             height: rowHeight - 2 * padding,
+             ellipsis: true,
+           });
       });
+
       currentY += rowHeight;
     });
 
@@ -128,8 +136,6 @@ function createPdfFromTable(rows, outputPath) {
     stream.on('error', reject);
   });
 }
-
-
 
 module.exports = {
   createPdfFromText,
