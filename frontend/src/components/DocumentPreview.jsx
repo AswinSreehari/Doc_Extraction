@@ -209,21 +209,24 @@ export default function DocumentPreview({ document: doc }) {
   </button>
 
   {/* JSON Download Button */}
+  {/\.(csv|xls|xlsx)$/i.test(doc.originalFileName) && (
   <a
-  href={`${API_BASE_URL}/documents/${doc.id}/json`}
-  rel="noopener noreferrer"
-  className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-[11px] font-medium tracking-wide
-             bg-slate-900/90 border border-blue-300/70 text-blue-100
-             shadow-[0_0_18px_rgba(147,197,253,0.55)]
-             hover:bg-blue-500/20 hover:border-blue-300 hover:text-blue-50
-             transition-colors"
-  download={`${doc.originalFileName || 'document'}.json`}
->
-  <span>Download JSON</span>
-  <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" strokeWidth="1.8" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v11.25m0 0L8.25 12m3.75 3.75L15.75 12M5.25 18.75h13.5" />
-  </svg>
-</a>
+    href={`${API_BASE_URL}/documents/${doc.id}/json`}
+    rel="noopener noreferrer"
+    className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-[11px] font-medium tracking-wide
+               bg-slate-900/90 border border-blue-300/70 text-blue-100
+               shadow-[0_0_18px_rgba(147,197,253,0.55)]
+               hover:bg-blue-500/20 hover:border-blue-300 hover:text-blue-50
+               transition-colors"
+    download={`${doc.originalFileName || 'document'}.json`}
+  >
+    <span>Download JSON</span>
+    <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" strokeWidth="1.8" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v11.25m0 0L8.25 12m3.75 3.75L15.75 12M5.25 18.75h13.5" />
+    </svg>
+  </a>
+)}
+
 
     
 </div>

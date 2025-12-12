@@ -82,9 +82,15 @@ function createPdfFromTable(rows, outputPath) {
 
     // Draw header row
     ensureSpaceForRow();
-    doc.rect(startX, currentY, pageWidth, rowHeight).fill(headerFill);
     headers.forEach((header, i) => {
       const x = startX + i * colWidth;
+
+      // Fill background
+      doc
+        .rect(x, currentY, colWidth, rowHeight)
+        .fillAndStroke(headerFill, '#000000');
+
+      // Text
       doc
         .fontSize(10)
         .fillColor('#111827')
@@ -92,18 +98,17 @@ function createPdfFromTable(rows, outputPath) {
           width: colWidth - 2 * padding,
           height: rowHeight - 2 * padding,
           ellipsis: true,
-        })
-        .stroke();
+        });
     });
-    doc.fillColor('#000000'); // reset color
     currentY += rowHeight;
 
-    // Draw rows
+    // Draw data rows
     rows.forEach((row) => {
       ensureSpaceForRow();
       headers.forEach((header, i) => {
         const x = startX + i * colWidth;
         const text = row[header] !== undefined ? String(row[header]) : '';
+
         doc
           .rect(x, currentY, colWidth, rowHeight)
           .stroke()
@@ -123,6 +128,7 @@ function createPdfFromTable(rows, outputPath) {
     stream.on('error', reject);
   });
 }
+
 
 
 module.exports = {
