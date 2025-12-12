@@ -12,6 +12,7 @@ app.use(
   cors({
     origin: [
       'https://file-upload-brown.vercel.app',  
+      'https://doc-extraction-ten.vercel.app',  
       'http://localhost:5173',                
     ],
     methods: 'GET,POST,PUT,PATCH,DELETE,OPTIONS',
