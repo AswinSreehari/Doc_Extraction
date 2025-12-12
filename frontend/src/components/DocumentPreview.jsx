@@ -202,7 +202,7 @@ export default function DocumentPreview({ document: doc }) {
                hover:bg-emerald-500/20 hover:border-emerald-300 hover:text-emerald-50
                transition-colors"
   >
-    <span>Download PDF</span>
+    <span>  PDF</span>
     <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" strokeWidth="1.8" stroke="currentColor">
       <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v11.25m0 0L8.25 12m3.75 3.75L15.75 12M5.25 18.75h13.5" />
     </svg>
@@ -220,7 +220,7 @@ export default function DocumentPreview({ document: doc }) {
                transition-colors"
     download={`${doc.originalFileName || 'document'}.json`}
   >
-    <span>Download JSON</span>
+    <span>  JSON</span>
     <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" strokeWidth="1.8" stroke="currentColor">
       <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v11.25m0 0L8.25 12m3.75 3.75L15.75 12M5.25 18.75h13.5" />
     </svg>
