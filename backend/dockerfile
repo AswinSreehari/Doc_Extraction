@@ -18,13 +18,16 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 
+# ✅ Copy requirements.txt before installing Python dependencies
+COPY requirements.txt .
+
+# ✅ Install Python dependencies AFTER copying requirements.txt
+RUN pip3 install -r requirements.txt
+
 # Copy the rest of the app
 COPY . .
 
-# Install Python dependencies (make sure you have a requirements.txt)
-RUN pip3 install -r requirements.txt
-
-# Environment variable for Tesseract path (used in your code)
+# Environment variable for Tesseract path
 ENV TESSERACT_PATH=/usr/bin/tesseract
 
 # Expose the port your server listens on
